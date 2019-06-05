@@ -7,11 +7,9 @@
 
 //------------------------------------------------------------------------------
 
-using units::base_unit;
-using units::derived_unit;
-using units::scaled_unit;
-using units::exp;
-using units::value;
+namespace si_system {
+
+using namespace units;
 
 //------------------------------------------------------------------------------
 
@@ -136,6 +134,7 @@ struct si {
   using metric_ton = tonne;
 };
 
+}
 //------------------------------------------------------------------------------
 
 template <typename T> void print_type() {
@@ -143,6 +142,8 @@ template <typename T> void print_type() {
 }
 
 int main() {
+  using namespace si_system;
+
   constexpr value<double, si::astronomical_unit> dist{4.0};
   print_type<decltype(dist)>();
 }
