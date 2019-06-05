@@ -1,8 +1,8 @@
 #ifndef BST_UNITS_BITS_META_
 #define BST_UNITS_BITS_META_
 
-#include <type_traits>
 #include <ratio>
+#include <type_traits>
 
 //==============================================================================
 namespace units::meta {
