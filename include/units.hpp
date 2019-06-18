@@ -129,6 +129,18 @@ template <typename T, typename Unit>
 using value = value_impl<T, typename detail::get_scale<Unit>::type,
                          typename detail::get_base_unit_list<Unit>::type>;
 
+//------------------------------------------------------------------------------
+
+template <typename To, typename T> constexpr auto unit_cast(T const &x) {
+  return static_cast<value<typename T::value_type, To>>(x);
+}
+
+//------------------------------------------------------------------------------
+
+template <typename Unit, typename T> constexpr auto value_of(T const& x) {
+  return value<T, Unit>{x};
+}
+
 } // namespace units
 //==============================================================================
 
