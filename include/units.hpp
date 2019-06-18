@@ -53,7 +53,13 @@ template <
     typename Value1, typename Value2,
     typename = std::enable_if_t<Value1::template convertible_with<Value2>>>
 constexpr auto operator+(Value1 const &v1, Value2 const &v2) {
-  return Value1{v1.get() + static_cast<Value1>(v2).get()};
+  using scale1 = typename Value1::scale;
+  using scale2 = typename Value2::scale;
+
+  if constexpr (std::ratio_less_v<scale1, scale2>)
+    return Value1{v1.get() + static_cast<Value1>(v2).get()};
+  else
+    return Value2{static_cast<Value2>(v1).get() + v2.get()};
 }
 
 //------------------------------------------------------------------------------
@@ -62,7 +68,13 @@ template <
     typename Value1, typename Value2,
     typename = std::enable_if_t<Value1::template convertible_with<Value2>>>
 constexpr auto operator-(Value1 const &v1, Value2 const &v2) {
-  return Value1{v1.get() - static_cast<Value1>(v2).get()};
+  using scale1 = typename Value1::scale;
+  using scale2 = typename Value2::scale;
+
+  if constexpr (std::ratio_less_v<scale1, scale2>)
+    return Value1{v1.get() - static_cast<Value1>(v2).get()};
+  else
+    return Value2{static_cast<Value2>(v1).get() - v2.get()};
 }
 
 //------------------------------------------------------------------------------
