@@ -148,11 +148,11 @@ template <typename T> void print_type(T&) {
 int main() {
   using namespace si_system;
 
-  auto x = value_of<si::kilo<si::metre>>(4.0);
-  auto y = value_of<si::deca<si::metre>>(10.0);
+  auto x = quantity_of<si::kilo<si::metre>>(4.0);
+  auto y = quantity_of<si::deca<si::metre>>(10.0);
   auto z = x - y;
 
-  auto w = value_of<si::second>(10.0);
+  auto w = quantity_of<si::second>(10.0);
 
   auto velocity = z / w;
   auto in_ms = unit_cast<si::metre_per_second>(velocity);

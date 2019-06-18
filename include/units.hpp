@@ -18,7 +18,7 @@ using derived_unit = typename detail::parse_derived_unit<Params...>::type;
 
 //------------------------------------------------------------------------------
 
-template <typename T, typename Scale, typename UnitList> class value_impl {
+template <typename T, typename Scale, typename UnitList> class basic_quantity {
   T val;
 
 public:
@@ -30,7 +30,7 @@ public:
   static constexpr auto convertible_with =
       std::is_same_v<base_units, typename Other::base_units>;
 
-  explicit constexpr value_impl(value_type const &v) : val{v} {}
+  explicit constexpr basic_quantity(value_type const &v) : val{v} {}
 
   constexpr auto get() const { return val; }
 
@@ -94,7 +94,7 @@ constexpr auto operator*(Value1 const &v1, Value2 const &v2) {
   using scale_from_base = typename meta::recip<typename Value2::scale>::type;
   using scale = std::ratio_multiply<scale_to_base, scale_from_base>;
 
-  return value_impl<value_type, scale, unit_list>(
+  return basic_quantity<value_type, scale, unit_list>(
       static_cast<value_type>(v1.get()) * static_cast<value_type>(v2.get()));
 }
 
@@ -119,26 +119,27 @@ constexpr auto operator/(Value1 const &v1, Value2 const &v2) {
   using scale_from_base = typename meta::recip<typename Value2::scale>::type;
   using scale = std::ratio_multiply<scale_to_base, scale_from_base>;
 
-  return value_impl<value_type, scale, unit_list>(
+  return basic_quantity<value_type, scale, unit_list>(
       static_cast<value_type>(v1.get()) / static_cast<value_type>(v2.get()));
 }
 
 //------------------------------------------------------------------------------
 
 template <typename T, typename Unit>
-using value = value_impl<T, typename detail::get_scale<Unit>::type,
-                         typename detail::get_base_unit_list<Unit>::type>;
+using quantity =
+    basic_quantity<T, typename detail::get_scale<Unit>::type,
+                   typename detail::get_base_unit_list<Unit>::type>;
 
 //------------------------------------------------------------------------------
 
 template <typename To, typename T> constexpr auto unit_cast(T const &x) {
-  return static_cast<value<typename T::value_type, To>>(x);
+  return static_cast<quantity<typename T::value_type, To>>(x);
 }
 
 //------------------------------------------------------------------------------
 
-template <typename Unit, typename T> constexpr auto value_of(T const& x) {
-  return value<T, Unit>{x};
+template <typename Unit, typename T> constexpr auto quantity_of(T const& x) {
+  return quantity<T, Unit>{x};
 }
 
 } // namespace units
