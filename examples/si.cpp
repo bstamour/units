@@ -2,6 +2,7 @@
 
 #include <units.hpp>
 
+#include <iostream>
 #include <ratio>
 #include <type_traits>
 
@@ -134,18 +135,23 @@ struct si {
   using metric_ton = tonne;
 };
 
-}
+} // namespace si_system
 //------------------------------------------------------------------------------
 
-template <typename T> void print_type() {
+template <typename T> void print_type(T&) {
   static_assert(std::is_same_v<T, int>);
 }
 
 int main() {
   using namespace si_system;
 
-  constexpr value<double, si::astronomical_unit> dist{4.0};
-  print_type<decltype(dist)>();
+  auto x = value<double, si::kilo<si::metre>>{4};
+  auto y = value<double, si::deca<si::metre>>{10};
+  auto z = x - y;
+
+  std::cout << z.get() << std::endl;
+
+//  print_type(z);
 }
 
 //==============================================================================
