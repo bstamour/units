@@ -18,17 +18,20 @@ struct si {
 
   // Base units.
 
-  using second = base_unit<0>;
-  using metre = base_unit<1>;
-  using kilogram = base_unit<2>;
-  using kelvin = base_unit<3>;
-  using ampere = base_unit<4>;
-  using mole = base_unit<5>;
-  using candela = base_unit<6>;
+  using second = base_unit<0>;   // time
+  using metre = base_unit<1>;    // length
+  using kilogram = base_unit<2>; // mass
+  using kelvin = base_unit<3>;   // temperature
+  using ampere = base_unit<4>;   // current
+  using mole = base_unit<5>;     // amount of substance
+  using candela = base_unit<6>;  // luminous intensity
 
   // Dimensionless derived units.
 
+  // Angular measure.
   using radian = derived_unit<metre, exp<metre, -1>>;
+
+  // Solid angle measure.
   using steradian = derived_unit<exp<metre, 2>, exp<metre, -2>>;
 
   // Derived units.
