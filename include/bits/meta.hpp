@@ -9,6 +9,16 @@ namespace units::meta {
 
 template <typename... Ts> struct type_list;
 
+struct empty_type {};
+
+template <bool B> using inherit_if = std::enable_if_t<B, empty_type>;
+
+template <typename T> void print_type()
+{
+    struct internal {};
+    static_assert(std::is_same_v<T, internal>);
+}
+
 //------------------------------------------------------------------------------
 
 template <typename List1, typename List2> struct type_list_append;
