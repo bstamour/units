@@ -154,6 +154,8 @@ struct parse_product_unit<product_unit<Param, Params...>> {
 
 template <typename TagBody> struct unit_tag;
 
+template <typename Unit> struct affine_tag_body;
+
 template <typename Scale, typename PowerPairList> struct rational_tag_body;
 
 //---
