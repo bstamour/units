@@ -29,7 +29,7 @@ Example System
 
 ```
 struct si {
-    using second = base_unit<0>;
+	using second = base_unit<0>;
 	using metre = base_unit<1>;
 
 	// More base units...
