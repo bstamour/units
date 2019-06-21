@@ -13,9 +13,6 @@
 //==============================================================================
 namespace units {
 
-template <typename... Params>
-using derived_unit = typename detail::parse_derived_unit<Params...>::type;
-
 //------------------------------------------------------------------------------
 
 template <typename T, typename Scale, typename UnitList> class basic_quantity {

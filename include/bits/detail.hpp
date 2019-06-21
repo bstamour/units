@@ -19,6 +19,26 @@ template <typename Unit, int P> struct unit_power_pair {
 
 //------------------------------------------------------------------------------
 
+template <typename... Params> struct parse_derived_unit;
+
+template <> struct parse_derived_unit<> { using type = derived_unit_impl<>; };
+
+template <typename Unit, int P, typename... Params>
+struct parse_derived_unit<exp<Unit, P>, Params...> {
+  using type = typename meta::type_list_append<
+      derived_unit_impl<unit_power_pair<Unit, P>>,
+      typename parse_derived_unit<Params...>::type>::type;
+};
+
+template <typename Param, typename... Params>
+struct parse_derived_unit<Param, Params...> {
+  using type = typename meta::type_list_append<
+      derived_unit_impl<unit_power_pair<Param, 1>>,
+      typename parse_derived_unit<Params...>::type>::type;
+};
+
+//------------------------------------------------------------------------------
+
 template <typename P1, typename P2> struct comp {
   static const bool value = P1::unit::tag < P2::unit::tag;
 };
@@ -94,6 +114,11 @@ struct flatten_and_scale<derived_unit_impl<Pair, Pairs...>> {
       typename flatten_and_scale<derived_unit_impl<Pairs...>>::ratio>;
 };
 
+template <typename... Values> struct flatten_and_scale<derived_unit<Values...>>
+    : flatten_and_scale<typename parse_derived_unit<Values...>::type>
+{
+};
+
 //------------------------------------------------------------------------------
 
 template <typename Unit> struct get_base_unit_list {
@@ -104,25 +129,6 @@ template <typename Unit> struct get_scale {
   using type = typename flatten_and_scale<Unit>::ratio;
 };
 
-//------------------------------------------------------------------------------
-
-template <typename... Params> struct parse_derived_unit;
-
-template <> struct parse_derived_unit<> { using type = derived_unit_impl<>; };
-
-template <typename Unit, int P, typename... Params>
-struct parse_derived_unit<exp<Unit, P>, Params...> {
-  using type = typename meta::type_list_append<
-      derived_unit_impl<unit_power_pair<Unit, P>>,
-      typename parse_derived_unit<Params...>::type>::type;
-};
-
-template <typename Param, typename... Params>
-struct parse_derived_unit<Param, Params...> {
-  using type = typename meta::type_list_append<
-      derived_unit_impl<unit_power_pair<Param, 1>>,
-      typename parse_derived_unit<Params...>::type>::type;
-};
 
 } // namespace units::detail
 //==============================================================================
