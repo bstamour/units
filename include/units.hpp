@@ -122,9 +122,6 @@ constexpr auto operator/(Value1 const &v1, Value2 const &v2) {
 
 //------------------------------------------------------------------------------
 
-
-//------------------------------------------------------------------------------
-
 template <typename To, typename T> constexpr auto unit_cast(T const &x) {
   return static_cast<quantity<typename T::value_type, To>>(x);
 }
