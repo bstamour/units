@@ -360,60 +360,36 @@ constexpr auto unit_cast(FromUnit const &u) {
   using value_type = typename FromUnit::value_type;
   using tag_type = typename detail::make_unit_tag<ToUnit>::type;
 
-  if constexpr (FromUnit::is_affine && is_affine_unit_v<ToUnit>) {
-    // 1. Affine and convertible.
-    using shift_to_type = typename FromUnit::tag_type::unit::shift;
-    using scale_to_type =
-        typename meta::recip<typename FromUnit::tag_type::unit::scale>::type;
-
-    using shift_from_type = typename ToUnit::shift;
-    using scale_from_type = typename ToUnit::scale;
-
-    // Convert down to the base.
-    auto x = u.get();
-    x += (static_cast<value_type>(shift_to_type::num) /
-          static_cast<value_type>(shift_to_type::den));
-
-    x *= static_cast<value_type>(scale_to_type::num);
-    x /= static_cast<value_type>(scale_to_type::den);
-
-    // Convert up to the new affine type.
-    x *= static_cast<value_type>(scale_from_type::num);
-    x /= static_cast<value_type>(scale_from_type::den);
-
-    x -= (static_cast<value_type>(shift_from_type::num) /
-          static_cast<value_type>(shift_from_type::den));
-
-    return quantity<value_type, tag_type>{x};
-  } else if constexpr (FromUnit::is_affine && is_rational_unit_v<ToUnit>) {
-    // 2. Affine to it's rational base.
-    using shift_to_type = typename FromUnit::tag_type::unit::shift;
-    using scale_to_type =
-        typename meta::recip<typename FromUnit::tag_type::unit::scale>::type;
-
-    // Convert down to the base.
-    auto x = u.get();
-    x += (static_cast<value_type>(shift_to_type::num) /
-          static_cast<value_type>(shift_to_type::den));
-
-    x *= static_cast<value_type>(scale_to_type::num);
-    x /= static_cast<value_type>(scale_to_type::den);
-
-    return quantity<value_type, tag_type>{x};
-  } else if constexpr (FromUnit::is_rational && is_affine_unit_v<ToUnit>) {
-    // 3. Rational base to an affine variant.
-    using shift_from_type = typename ToUnit::shift;
-    using scale_from_type = typename ToUnit::scale;
-
-    // Convert down to the base.
+  if constexpr (FromUnit::is_affine || is_affine_unit_v<ToUnit>) {
     auto x = u.get();
 
-    // Convert up to the new affine type.
-    x *= static_cast<value_type>(scale_from_type::num);
-    x /= static_cast<value_type>(scale_from_type::den);
+    if constexpr (FromUnit::is_affine) {
+      using shift_to_type = typename FromUnit::tag_type::unit::shift;
+      using scale_to_type =
+          typename meta::recip<typename FromUnit::tag_type::unit::scale>::type;
 
-    x -= (static_cast<value_type>(shift_from_type::num) /
-          static_cast<value_type>(shift_from_type::den));
+
+      // Convert down to the base.
+
+      x += (static_cast<value_type>(shift_to_type::num) /
+            static_cast<value_type>(shift_to_type::den));
+
+      x *= static_cast<value_type>(scale_to_type::num);
+      x /= static_cast<value_type>(scale_to_type::den);
+    }
+
+    if constexpr (is_affine_unit_v<ToUnit>) {
+      // Convert up to the new affine type.
+      using shift_from_type = typename ToUnit::shift;
+      using scale_from_type = typename ToUnit::scale;
+
+
+      x *= static_cast<value_type>(scale_from_type::num);
+      x /= static_cast<value_type>(scale_from_type::den);
+
+      x -= (static_cast<value_type>(shift_from_type::num) /
+            static_cast<value_type>(shift_from_type::den));
+    }
 
     return quantity<value_type, tag_type>{x};
   } else {
@@ -444,7 +420,7 @@ struct si {
 int main() {
   auto x = units::quantity_of<si::kelvin>(0.0);
 
-  auto z = units::unit_cast<si::metre>(x);
+  auto z = units::unit_cast<si::degrees_celcius>(x);
 
   std::cout << z.get() << std::endl;
 
