@@ -15,7 +15,7 @@ the system.
 
 A scaled version of an underlying unit. e.g. kilograms.
 
-### derived_unit<Param params...>
+### derived_unit<Param params\...>
 
 A derived unit, defined as the product of a list of units, and their
 respective powers. e.g. metre per second.
