@@ -4,7 +4,7 @@
 //==============================================================================
 
 #include "bits/detail.hpp"
-#include "bits/units_fwd.hpp"
+#include "units_fwd.hpp"
 #include "bits/meta.hpp"
 
 #include <ratio>
@@ -122,10 +122,6 @@ constexpr auto operator/(Value1 const &v1, Value2 const &v2) {
 
 //------------------------------------------------------------------------------
 
-template <typename T, typename Unit>
-using quantity =
-    basic_quantity<T, typename detail::get_scale<Unit>::type,
-                   typename detail::get_base_unit_list<Unit>::type>;
 
 //------------------------------------------------------------------------------
 
