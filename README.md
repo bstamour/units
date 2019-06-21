@@ -43,3 +43,23 @@ struct si {
 	// More derived units...
 };
 ```
+
+Usage Example
+-------------
+
+```
+void f()
+{
+	auto dist = quantity_of<si::metre>(4.5);
+	auto time = quantity_of<si::second>(2.0);
+
+	// Compute a value of metres per second.
+	auto velocity = dist / time;
+
+	// Scale a quantity.
+	auto in_km = unit_cast<si::kilometre>(dist);
+
+	// BAD! Compiler errir!
+	auto nonsense = in_km + time;
+}
+```
