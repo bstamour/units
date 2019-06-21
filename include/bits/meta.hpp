@@ -19,6 +19,9 @@ template <typename T> void print_type()
     static_assert(std::is_same_v<T, internal>);
 }
 
+template <typename T>
+constexpr bool always_false = false;
+
 //------------------------------------------------------------------------------
 
 template <typename List1, typename List2> struct type_list_append;
@@ -27,6 +30,27 @@ template <typename... Items1, typename... Items2>
 struct type_list_append<type_list<Items1...>, type_list<Items2...>> {
   using type = type_list<Items1..., Items2...>;
 };
+
+//------------------------------------------------------------------------------
+
+template <typename List> struct type_list_length;
+
+template <typename... Items> struct type_list_length<type_list<Items...>>
+    : std::integral_constant<std::size_t, sizeof...(Items)>
+    {};
+
+//------------------------------------------------------------------------------
+
+template <typename List> struct type_list_head;
+
+//template <> struct type_list_head<
+
+template <typename Item, typename... Items>
+struct type_list_head<type_list<Item, Items...>> {
+    using type = Item;
+};
+
+//------------------------------------------------------------------------------
 
 template <template <typename> typename Op, typename List> struct type_list_map;
 
