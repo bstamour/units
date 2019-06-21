@@ -27,7 +27,7 @@ A magnitude of type T, paired with it's unit. e.g. 4.5 seconds.
 Example System
 --------------
 
-```
+```C++
 struct si {
 	using second = base_unit<0>;
 	using metre = base_unit<1>;
@@ -47,7 +47,7 @@ struct si {
 Usage Example
 -------------
 
-```
+```C++
 void f()
 {
 	auto dist = quantity_of<si::metre>(4.5);
