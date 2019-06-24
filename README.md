@@ -68,6 +68,12 @@ void f()
 }
 ```
 
+More Examples
+-------------
+
+1. SI units: https://github.com/bstamour/units/blob/master/examples/si.cpp
+2. CGS: https://github.com/bstamour/units/blob/master/examples/cgs.cpp
+
 Limitations
 -----------
 
