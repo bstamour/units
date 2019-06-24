@@ -1,7 +1,11 @@
 units
 =====
 
-Using C++ templates to track dimensional metadata
+This library provides the building blocks for constructing custom unit systems. The resulting systems then provide
+type-safe dimensional analysis for runtime quantities. For example, a unit of length cannot be added to a unit
+of time. However they can be safely divided, resulting in a unit of length over time (a velocity).
+
+So far the basic arithmetic operators (addition, subtraction, multiplication, division) are provided.
 
 Basic Types
 -----------
@@ -63,3 +67,10 @@ void f()
 	auto nonsense = in_km + time;
 }
 ```
+
+Limitations
+-----------
+
+So far there is no way to represent an inter-system conversion. But down the road, such conversions, e.g. metres to imperial feet, will be able to be represented.
+
+Also, there is no support for affine (or pure interval) units, such as Degrees Celcius. Use Kelvin.
