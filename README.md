@@ -6,12 +6,12 @@ Using C++ templates to track dimensional metadata
 Basic Types
 -----------
 
-### base_unit<int tag>
+### base_unit\<int tag\>
 
 A base unit for the system being defined. Tags must be unique within
 the system.
 
-### scaled_unit<Ratio scale, Unit unit>
+### scaled_unit\<Ratio scale, Unit unit\>
 
 A scaled version of an underlying unit. e.g. kilograms.
 
