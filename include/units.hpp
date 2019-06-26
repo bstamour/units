@@ -4,8 +4,8 @@
 //==============================================================================
 
 #include "bits/detail.hpp"
-#include "units_fwd.hpp"
 #include "bits/meta.hpp"
+#include "units_fwd.hpp"
 
 #include <ratio>
 #include <type_traits>
@@ -31,14 +31,17 @@ public:
 
   constexpr auto get() const { return val; }
 
-  template <typename Other,
-            typename = std::enable_if_t<convertible_with<Other>>>
-  explicit constexpr operator Other() const {
+  template <typename U, typename S, typename UL>
+  explicit constexpr operator basic_quantity<U, S, UL>() const {
+    using other_type = basic_quantity<U, S, UL>;
+
+    static_assert(convertible_with<other_type>, "Units are not convertible");
+
     using scale_to_base = scale;
-    using scale_from_base = typename meta::recip<typename Other::scale>::type;
+    using scale_from_base = typename meta::recip<S>::type;
     using scale_to_other = std::ratio_multiply<scale_to_base, scale_from_base>;
 
-    return Other{val * scale_to_other::num / scale_to_other::den};
+    return other_type{val * scale_to_other::num / scale_to_other::den};
   }
 
   explicit constexpr operator value_type() const { return val; }
@@ -46,49 +49,55 @@ public:
 
 //------------------------------------------------------------------------------
 
-template <
-    typename Value1, typename Value2,
-    typename = std::enable_if_t<Value1::template convertible_with<Value2>>>
-constexpr auto operator+(Value1 const &v1, Value2 const &v2) {
-  using scale1 = typename Value1::scale;
-  using scale2 = typename Value2::scale;
+template <typename T1, typename Scale1, typename UL1, typename T2,
+          typename Scale2, typename UL2>
+constexpr auto operator+(basic_quantity<T1, Scale1, UL1> const &v1,
+                         basic_quantity<T2, Scale2, UL2> const &v2) {
+  using value_1 = basic_quantity<T1, Scale1, UL1>;
+  using value_2 = basic_quantity<T2, Scale2, UL2>;
 
-  if constexpr (std::ratio_less_v<scale1, scale2>)
-    return Value1{v1.get() + static_cast<Value1>(v2).get()};
+  static_assert(value_1::template convertible_with<value_2>,
+                "Units are not compatible for addition");
+
+  if constexpr (std::ratio_less_v<Scale1, Scale2>)
+    return value_1{v1.get() + static_cast<value_1>(v2).get()};
   else
-    return Value2{static_cast<Value2>(v1).get() + v2.get()};
+    return value_2{static_cast<value_2>(v1).get() + v2.get()};
 }
 
 //------------------------------------------------------------------------------
 
-template <
-    typename Value1, typename Value2,
-    typename = std::enable_if_t<Value1::template convertible_with<Value2>>>
-constexpr auto operator-(Value1 const &v1, Value2 const &v2) {
-  using scale1 = typename Value1::scale;
-  using scale2 = typename Value2::scale;
+template <typename T1, typename Scale1, typename UL1, typename T2,
+          typename Scale2, typename UL2>
+constexpr auto operator-(basic_quantity<T1, Scale1, UL1> const &v1,
+                         basic_quantity<T2, Scale2, UL2> const &v2) {
+  using value_1 = basic_quantity<T1, Scale1, UL1>;
+  using value_2 = basic_quantity<T2, Scale2, UL2>;
 
-  if constexpr (std::ratio_less_v<scale1, scale2>)
-    return Value1{v1.get() - static_cast<Value1>(v2).get()};
+  static_assert(value_1::template convertible_with<value_2>,
+                "Units are not compatible for subtraction");
+
+  if constexpr (std::ratio_less_v<Scale1, Scale2>)
+    return value_1{v1.get() - static_cast<value_1>(v2).get()};
   else
-    return Value2{static_cast<Value2>(v1).get() - v2.get()};
+    return value_2{static_cast<value_2>(v1).get() - v2.get()};
 }
 
 //------------------------------------------------------------------------------
 
-template <typename Value1, typename Value2>
-constexpr auto operator*(Value1 const &v1, Value2 const &v2) {
+template <typename T1, typename Scale1, typename UL1, typename T2,
+          typename Scale2, typename UL2>
+constexpr auto operator*(basic_quantity<T1, Scale1, UL1> const &v1,
+                         basic_quantity<T2, Scale2, UL2> const &v2) {
   using unit_list = typename meta::type_list_remove_if<
       detail::is_power_zero,
-      typename meta::type_list_merge_with<
-          detail::comp, detail::merge_add, typename Value1::base_units,
-          typename Value2::base_units>::type>::type;
+      typename meta::type_list_merge_with<detail::comp, detail::merge_add, UL1,
+                                          UL2>::type>::type;
 
-  using value_type = std::common_type_t<typename Value1::value_type,
-                                        typename Value2::value_type>;
+  using value_type = std::common_type_t<T1, T2>;
 
-  using scale_to_base = typename Value1::scale;
-  using scale_from_base = typename meta::recip<typename Value2::scale>::type;
+  using scale_to_base = Scale1;
+  using scale_from_base = typename meta::recip<Scale2>::type;
   using scale = std::ratio_multiply<scale_to_base, scale_from_base>;
 
   return basic_quantity<value_type, scale, unit_list>(
@@ -97,23 +106,22 @@ constexpr auto operator*(Value1 const &v1, Value2 const &v2) {
 
 //------------------------------------------------------------------------------
 
-template <typename Value1, typename Value2>
-constexpr auto operator/(Value1 const &v1, Value2 const &v2) {
+template <typename T1, typename Scale1, typename UL1, typename T2,
+          typename Scale2, typename UL2>
+constexpr auto operator/(basic_quantity<T1, Scale1, UL1> const &v1,
+                         basic_quantity<T2, Scale2, UL2> const &v2) {
   using inverted_units =
-      typename meta::type_list_map<detail::invert_power,
-                                   typename Value2::base_units>::type;
+      typename meta::type_list_map<detail::invert_power, UL2>::type;
 
   using unit_list = typename meta::type_list_remove_if<
       detail::is_power_zero,
-      typename meta::type_list_merge_with<detail::comp, detail::merge_add,
-                                          typename Value1::base_units,
+      typename meta::type_list_merge_with<detail::comp, detail::merge_add, UL1,
                                           inverted_units>::type>::type;
 
-  using value_type = std::common_type_t<typename Value1::value_type,
-                                        typename Value2::value_type>;
+  using value_type = std::common_type_t<T1, T2>;
 
-  using scale_to_base = typename Value1::scale;
-  using scale_from_base = typename meta::recip<typename Value2::scale>::type;
+  using scale_to_base = Scale1;
+  using scale_from_base = typename meta::recip<Scale2>::type;
   using scale = std::ratio_multiply<scale_to_base, scale_from_base>;
 
   return basic_quantity<value_type, scale, unit_list>(
@@ -128,7 +136,7 @@ template <typename To, typename T> constexpr auto unit_cast(T const &x) {
 
 //------------------------------------------------------------------------------
 
-template <typename Unit, typename T> constexpr auto quantity_of(T const& x) {
+template <typename Unit, typename T> constexpr auto quantity_of(T const &x) {
   return quantity<T, Unit>{x};
 }
 
