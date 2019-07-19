@@ -28,6 +28,18 @@ respective powers. e.g. metre per second.
 
 A magnitude of type T, paired with it's unit. e.g. 4.5 seconds.
 
+Basic Functions
+---------------
+
+### quantity_of\<Unit unit\>(value)
+
+Create an object of type quantity\<decltype(value), Unit\>. The representation type T is automatically computed from the
+type of the input. So e.g. quaitity_of\<kilometre\>(4.5) will give you double precision, while quantity_of\<metre\>(0.5f) will give you single precision.
+
+### unit_cast\<Unit from\>(Quantity from)
+
+Cast the quantity to a quantity of a new unit type. Fails to compile if the unit types are incompatible with each other (e.g. you cannot cast a quantity of type to a quantity of length.)
+
 Example System
 --------------
 
