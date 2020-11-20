@@ -75,7 +75,7 @@ void f()
 	// Scale a quantity.
 	auto in_km = unit_cast<si::kilometre>(dist);
 
-	// BAD! Compiler errir!
+	// BAD! Compiler error!
 	auto nonsense = in_km + time;
 }
 ```
